@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Mat BOT</title>
+  <title>Mat BOT Premium</title>
   <link rel="icon" href="{{ url_for('static', filename='android-chrome-192x192.png') }}" type="image/png">
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
@@ -14,6 +14,8 @@
       --card-dark: #2c2d3c;
       --text-dark: #e5e7eb;
       --accent: #10a37f;
+      --premium-bg: #FFD700;
+      --premium-text: #333;
     }
 
     body[data-theme="light"] {
@@ -47,6 +49,14 @@
     header h1 {
       font-size: 1.4em;
       color: var(--accent);
+    }
+
+    .premium-badge {
+      background-color: var(--premium-bg);
+      color: var(--premium-text);
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-weight: bold;
     }
 
     .controls {
@@ -136,21 +146,35 @@
       cursor: pointer;
     }
 
-    #nameModal {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.6);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 10;
+    .code-response {
+      background: var(--card-light);
+      padding: 14px 18px;
+      border-radius: 12px;
+      max-width: 80%;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      line-height: 1.5em;
+      border: 1px solid #e5e7eb;
+      position: relative;
+      white-space: pre-wrap;
+      font-family: monospace;
     }
 
-    #nameModal div {
-      background: white;
-      padding: 30px;
-      border-radius: 8px;
-      text-align: center;
+    body[data-theme="dark"] .code-response {
+      background: var(--card-dark);
+      border-color: #3a3b4b;
+    }
+
+    .copy-button {
+      padding: 6px 12px;
+      background-color: #3b82f6;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .copy-button:hover {
+      background-color: #2563eb;
     }
 
     @media (max-width: 600px) {
@@ -162,7 +186,7 @@
 <body data-theme="light">
   <div id="nameModal">
     <div>
-      <h2>Welcome to Mat BOT</h2>
+      <h2>Welcome to Mat BOT Premium</h2>
       <p>Enter your name to start chatting:</p>
       <input type="text" id="usernameInput" placeholder="Your name" />
       <br/><br/>
@@ -171,7 +195,8 @@
   </div>
 
   <header>
-    <h1>🧠 Mat BOT</h1>
+    <h1><div>Mat-BOT</div></h1>
+    <div class="premium-badge">Premium</div>
     <div class="controls">
       <select id="themeToggle" onchange="setTheme(this.value)">
         <option value="light">☀️ Light</option>
@@ -265,16 +290,31 @@
       const div = document.createElement('div');
       div.className = `message-row ${sender}`;
       const avatar = `<div class="avatar ${sender}"></div>`;
-      const bubble = `<div class="bubble">${text}<div class="timestamp">${time}</div></div>`;
-      div.innerHTML = sender === 'user' ? avatar + bubble : avatar + bubble;
+      const bubble = sender === 'bot' ?
+        `<div class="code-response">${text}<div class="timestamp">${time}</div></div>` :
+        `<div class="bubble">${text}<div class="timestamp">${time}</div></div>`;
+
+      div.innerHTML = avatar + bubble;
       document.getElementById('chat').appendChild(div);
       document.getElementById('chat').scrollTop = chat.scrollHeight;
+
+      if (sender === 'bot') {
+        const copyButton = document.createElement('button');
+        copyButton.classList.add('copy-button');
+        copyButton.textContent = 'Copy';
+        copyButton.onclick = () => copyToClipboard(text);
+        div.querySelector('.code-response').appendChild(copyButton);
+      }
     }
 
     function saveToHistory(sender, text, time) {
       const history = JSON.parse(localStorage.getItem('chatHistory')) || [];
       history.push({ sender, text, time });
       localStorage.setItem('chatHistory', JSON.stringify(history));
+    }
+
+    function copyToClipboard(text) {
+      navigator.clipboard.writeText(text).then(() => alert('Copied to clipboard!'));
     }
 
     function exportChat() {
