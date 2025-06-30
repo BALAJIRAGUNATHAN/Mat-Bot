@@ -2,588 +2,335 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Mat BOT</title>
+  <title>Mat BOT Premium</title>
+  <link rel="icon" href="{{ url_for('static', filename='android-chrome-192x192.png') }}" type="image/png">
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <style>
-    * { box-sizing: border-box; }
-    html, body {
+    :root {
+      --bg-light: #f9f9f9;
+      --card-light: #ffffff;
+      --text-light: #1f2937;
+      --bg-dark: #1e1e2f;
+      --card-dark: #2c2d3c;
+      --text-dark: #e5e7eb;
+      --accent: #10a37f;
+      --premium-bg: #FFD700;
+      --premium-text: #333;
+    }
+
+    body[data-theme="light"] {
+      background: var(--bg-light);
+      color: var(--text-light);
+    }
+
+    body[data-theme="dark"] {
+      background: var(--bg-dark);
+      color: var(--text-dark);
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
       margin: 0;
-      padding: 0;
-      height: 100%;
-      font-family: 'Inter', sans-serif;
-      background-color: #ffffff;
-      color: #111;
-    }
-    body.dark {
-      background-color: #1f1f1f;
-      color: #f5f5f5;
-    }
-    #chat-container {
       display: flex;
       flex-direction: column;
       height: 100vh;
+      transition: 0.3s;
     }
+
     header {
-      padding: 16px 24px;
+      padding: 16px 20px;
+      background: white;
+      border-bottom: 1px solid #e5e7eb;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-bottom: 1px solid #eee;
-    }
-    #profile {
-      display: none;
-      align-items: center;
-      gap: 8px;
-    }
-    #profile img {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-    }
-    #chat {
-      flex: 1;
-      overflow-y: auto;
-      padding: 24px;
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
-    .message-row {
-      display: flex;
-      gap: 12px;
-      animation: fadeIn 0.3s ease;
-    }
-    .message-row.user { flex-direction: row-reverse; }
-    .avatar {
-      width: 40px; height: 40px;
-      border-radius: 50%;
-      background-size: cover;
-      background-position: center;
-    }
-    .avatar.user { background-image: url('https://i.pravatar.cc/40?u=user'); }
-    .avatar.bot  { background-image: url('https://api.dicebear.com/7.x/bottts/svg?seed=balaji'); }
-    .bubble {
-      max-width: 80%;
-      padding: 14px 18px;
-      border-radius: 16px;
-      font-size: 1rem;
-      line-height: 1.6;
-      word-wrap: break-word;
-      white-space: pre-wrap;
-    }
-    .message-row.user .bubble {
-      background-color: #10a37f;
-      color: white;
-      border-bottom-right-radius: 4px;
-    }
-    .message-row.bot .bubble {
-      background-color: #f3f4f6;
-      color: #111;
-      border-bottom-left-radius: 4px;
-    }
-    body.dark .message-row.bot .bubble {
-      background-color: #2d2d2d;
-      color: #f1f1f1;
     }
 
-    .code-block {
-      background-color: #1e1e1e;
-      color: #f5f5f5;
-      font-family: monospace;
-      padding: 16px;
-      border-radius: 8px;
-      margin-top: 8px;
-      position: relative;
-      overflow-x: auto;
-      white-space: pre;
+    header h1 {
+      font-size: 1.4em;
+      color: var(--accent);
     }
-    .copy-button {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      background: #10a37f;
-      color: white;
-      border: none;
+
+    .premium-badge {
+      background-color: var(--premium-bg);
+      color: var(--premium-text);
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-weight: bold;
+    }
+
+    .controls {
+      display: flex;
+      gap: 10px;
+    }
+
+    .controls select, .controls button {
       padding: 6px 10px;
-      font-size: 0.8rem;
+      font-size: 0.9em;
       border-radius: 6px;
       cursor: pointer;
     }
+
+    #chat {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+    }
+
+    .message-row {
+      display: flex;
+      align-items: flex-start;
+      margin-bottom: 16px;
+    }
+
+    .message-row.user { flex-direction: row-reverse; }
+
+    .avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background-size: cover;
+      margin: 0 10px;
+    }
+
+    .avatar.user { background-image: url('https://i.pravatar.cc/36?u=user'); }
+    .avatar.bot { background-image: url('https://api.dicebear.com/7.x/bottts/svg?seed=matbot'); }
+
+    .bubble {
+      background: var(--card-light);
+      padding: 14px 18px;
+      border-radius: 12px;
+      max-width: 80%;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      line-height: 1.5em;
+      border: 1px solid #e5e7eb;
+      position: relative;
+    }
+
+    body[data-theme="dark"] .bubble {
+      background: var(--card-dark);
+      border-color: #3a3b4b;
+    }
+
+    .timestamp {
+      font-size: 0.75em;
+      color: gray;
+      margin-top: 4px;
+      text-align: right;
+    }
+
     .input-area {
       display: flex;
+      flex-wrap: wrap;
       padding: 16px;
-      border-top: 1px solid #e0e0e0;
-      background-color: white;
+      background: white;
+      border-top: 1px solid #e5e7eb;
     }
-    .input-area textarea {
-      flex: 1;
-      padding: 14px;
-      font-size: 1rem;
-      border-radius: 10px;
+
+    .input-area input[type="text"] {
+      flex-grow: 1;
+      padding: 12px 14px;
+      font-size: 1em;
+      border-radius: 8px;
       border: 1px solid #ccc;
-      resize: none;
-      max-height: 200px;
-      font-family: inherit;
+      margin-right: 10px;
     }
+
     .input-area button {
-      margin-left: 12px;
-      padding: 14px 20px;
-      font-size: 1rem;
-      background-color: #10a37f;
+      padding: 12px 18px;
+      background: var(--accent);
       color: white;
       border: none;
-      border-radius: 10px;
+      border-radius: 8px;
+      font-weight: bold;
       cursor: pointer;
-      font-weight: 600;
     }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
+
+    .code-response {
+      background: var(--card-light);
+      padding: 14px 18px;
+      border-radius: 12px;
+      max-width: 80%;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      line-height: 1.5em;
+      border: 1px solid #e5e7eb;
+      position: relative;
+      white-space: pre-wrap;
+      font-family: monospace;
+    }
+
+    body[data-theme="dark"] .code-response {
+      background: var(--card-dark);
+      border-color: #3a3b4b;
+    }
+
+    .copy-button {
+      padding: 6px 12px;
+      background-color: #3b82f6;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .copy-button:hover {
+      background-color: #2563eb;
+    }
+
+    @media (max-width: 600px) {
+      .input-area { flex-direction: column; gap: 10px; }
+      .input-area input, .input-area button { width: 100%; }
     }
   </style>
 </head>
-<body>
-<!-- Login Modal -->
-<div id="login-modal">
-  <div id="login-box">
-    <h2>Welcome to Mat BOT</h2>
-    <input id="login-name" type="text" placeholder="Your Name" />
-    <input id="login-email" type="email" placeholder="Your Email" />
-    <button onclick="doLogin()">Start Chat</button>
+<body data-theme="light">
+  <div id="nameModal">
+    <div>
+      <h2>Welcome to Mat BOT Premium</h2>
+      <p>Enter your name to start chatting:</p>
+      <input type="text" id="usernameInput" placeholder="Your name" />
+      <br/><br/>
+      <button onclick="saveUsername()">Start Chat</button>
+    </div>
   </div>
-</div>
 
-<!-- Chat App -->
-<div id="chat-container">
   <header>
-    <h3>Mat BOT</h3>
-    <button id="plans-toggle" class="plans-button">💼 View Plans</button>
-    <div id="profile">
-      <img src="" alt="avatar" />
-      <span id="profile-name"></span>
+    <h1><div>Mat-BOT</div></h1>
+    <div class="premium-badge">Premium</div>
+    <div class="controls">
+      <select id="themeToggle" onchange="setTheme(this.value)">
+        <option value="light">☀️ Light</option>
+        <option value="dark">🌙 Dark</option>
+        <option value="auto">🌓 Auto</option>
+      </select>
+      <button onclick="exportChat()">📥 Export</button>
     </div>
   </header>
 
   <div id="chat"></div>
 
   <div class="input-area">
-    <textarea id="message" rows="1" placeholder="Send a message..."></textarea>
+    <input id="message" type="text" placeholder="Type a message..." />
     <button onclick="sendMessage()">Send</button>
   </div>
 
-  <div id="plan-popup">
-    <div class="plan-card free">
-      <h3>🆓 Free Plan</h3>
-      <ul>
-        <li>✅ Up to 5 chats</li>
-        <li>✅ Basic features</li>
-      </ul>
-      <button onclick="selectPlan('free')">Select Free</button>
-    </div>
+  <script>
+    let username = "You";
 
-    <div class="plan-card pro">
-      <h3>⭐ Pro Plan</h3>
-      <ul>
-        <li>🔥 Unlimited chats</li>
-        <li>🔥 Premium support</li>
-      </ul>
-      <button onclick="selectPlan('pro')">Select Pro</button>
-    </div>
-  </div>
-</div>
-
-<script>
-  let user = null;
-  let plan = 'free';
-  let chatCount = 0;
-
-  function doLogin() {
-    const name = document.getElementById("login-name").value.trim();
-    const email = document.getElementById("login-email").value.trim();
-    if (!name || !email) {
-      alert("Please enter your name and email.");
-      return;
-    }
-    user = { name, email };
-    document.getElementById("login-modal").style.display = "none";
-    document.getElementById("profile").style.display = "flex";
-    document.getElementById("profile-name").textContent = name;
-    document.querySelector("#profile img").src = `https://i.pravatar.cc/40?u=${email}`;
-  }
-
-  function selectPlan(p) {
-    plan = p;
-    if (p === 'pro') {
-      alert("✅ Pro Plan selected (test mode active). Enjoy unlimited chats!");
-    } else {
-      alert("🆓 Free Plan selected. Max 5 chats allowed.");
-    }
-  }
-
-  function sendMessage() {
-    const textarea = document.getElementById("message");
-    const text = textarea.value.trim();
-    if (!text || !user) return;
-
-    if (plan === 'free' && chatCount >= 5) {
-      addMessage('bot', "⚠️ You've reached the Free plan limit. Upgrade to Pro for unlimited access.");
-      return;
-    }
-
-    addMessage('user', text);
-    textarea.value = '';
-    chatCount++;
-
-    // Simulated bot response for demo (replace with API in production)
-    setTimeout(() => {
-      let reply;
-      if (text.toLowerCase().includes("factorial")) {
-        reply = `\`\`\`python\nn = 5\nfact = 1\nfor i in range(1, n + 1):\n  fact *= i\nprint(fact)\n\`\`\``;
-      } else if (text.toLowerCase().includes("prime")) {
-        reply = `\`\`\`python\nfor i in range(2, 20):\n  if all(i % d != 0 for d in range(2, i)):\n    print(i)\n\`\`\``;
-      } else {
-        reply = `🤖 You asked: "${text}"\n\n\`\`\`txt\nThis is a default code block for testing.\n\`\`\``;
+    function saveUsername() {
+      const input = document.getElementById('usernameInput');
+      if (input.value.trim()) {
+        username = input.value.trim();
+        localStorage.setItem('matbot_user', username);
+        document.getElementById('nameModal').style.display = 'none';
       }
-      addMessage('bot', reply);
-    }, 500);
-  }
+    }
 
-  function addMessage(sender, text) {
-    const chat = document.getElementById("chat");
-    const row = document.createElement("div");
-    row.className = `message-row ${sender}`;
-    const avatar = document.createElement("div");
-    avatar.className = `avatar ${sender}`;
-    const bubble = document.createElement("div");
-    bubble.className = "bubble";
-    bubble.innerHTML = parseMarkdown(text);
-    row.appendChild(avatar);
-    row.appendChild(bubble);
-    chat.appendChild(row);
-    chat.scrollTop = chat.scrollHeight;
-  }
+    function setTheme(mode) {
+      if (mode === "auto") {
+        const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        document.body.dataset.theme = prefersDark ? "dark" : "light";
+      } else {
+        document.body.dataset.theme = mode;
+      }
+      localStorage.setItem("matbot_theme", mode);
+    }
 
-  function parseMarkdown(text) {
-    // Detect triple backtick code blocks
-    const codeBlockRegex = /```([a-z]*)\n([\s\S]*?)```/g;
-    let html = text.replace(codeBlockRegex, (_, lang, code) => {
-      const escaped = escapeHtml(code);
-      const jsSafe = escapeJS(code);
-      return `
-        <div class="code-block">
-          <pre>${escaped}</pre>
-          <button class="copy-button" data-code="${jsSafe}">Copy</button>
-        </div>
-      `;
-    });
+    window.onload = () => {
+      const savedUser = localStorage.getItem('matbot_user');
+      if (savedUser) {
+        username = savedUser;
+        document.getElementById('nameModal').style.display = 'none';
+      }
 
-    return html
-      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-      .replace(/\*(.*?)\*/g, '<em>$1</em>')
-      .replace(/\n/g, '<br>');
-  }
+      const savedTheme = localStorage.getItem('matbot_theme') || 'light';
+      document.getElementById('themeToggle').value = savedTheme;
+      setTheme(savedTheme);
 
-  function escapeHtml(str) {
-    return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-  }
+      const history = JSON.parse(localStorage.getItem('chatHistory')) || [];
+      history.forEach(msg => addMessage(msg.sender, msg.text, msg.time));
+    };
 
-  function escapeJS(str) {
-    return str.replace(/\\/g, "\\\\").replace(/`/g, "\\`").replace(/\$/g, "\\$");
-  }
+    function sendMessage() {
+      const input = document.getElementById('message');
+      const text = input.value.trim();
+      if (!text) return;
+      const time = new Date().toLocaleTimeString();
 
-  document.addEventListener('click', function (e) {
-    if (e.target.classList.contains('copy-button')) {
-      const code = e.target.getAttribute('data-code');
-      navigator.clipboard.writeText(code).then(() => {
-        e.target.textContent = 'Copied!';
-        setTimeout(() => e.target.textContent = 'Copy', 1500);
+      addMessage('user', text, time);
+      saveToHistory('user', text, time);
+      input.value = '';
+
+      const loading = document.createElement('div');
+      loading.className = 'message-row bot';
+      loading.id = 'loadingMsg';
+      loading.innerHTML = `
+        <div class="avatar bot"></div>
+        <div class="bubble">Mat BOT is typing...</div>`;
+      document.getElementById('chat').appendChild(loading);
+      document.getElementById('chat').scrollTop = chat.scrollHeight;
+
+      setTimeout(() => {
+        fetch('/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: text, user: username })
+        })
+        .then(res => res.json())
+        .then(data => {
+          document.getElementById('loadingMsg').remove();
+          const botTime = new Date().toLocaleTimeString();
+          addMessage('bot', data.reply, botTime);
+          saveToHistory('bot', data.reply, botTime);
+        });
+      }, 1200);
+    }
+
+    function addMessage(sender, text, time) {
+      const div = document.createElement('div');
+      div.className = `message-row ${sender}`;
+      const avatar = `<div class="avatar ${sender}"></div>`;
+      const bubble = sender === 'bot' ?
+        `<div class="code-response">${text}<div class="timestamp">${time}</div></div>` :
+        `<div class="bubble">${text}<div class="timestamp">${time}</div></div>`;
+
+      div.innerHTML = avatar + bubble;
+      document.getElementById('chat').appendChild(div);
+      document.getElementById('chat').scrollTop = chat.scrollHeight;
+
+      if (sender === 'bot') {
+        const copyButton = document.createElement('button');
+        copyButton.classList.add('copy-button');
+        copyButton.textContent = 'Copy';
+        copyButton.onclick = () => copyToClipboard(text);
+        div.querySelector('.code-response').appendChild(copyButton);
+      }
+    }
+
+    function saveToHistory(sender, text, time) {
+      const history = JSON.parse(localStorage.getItem('chatHistory')) || [];
+      history.push({ sender, text, time });
+      localStorage.setItem('chatHistory', JSON.stringify(history));
+    }
+
+    function copyToClipboard(text) {
+      navigator.clipboard.writeText(text).then(() => alert('Copied to clipboard!'));
+    }
+
+    function exportChat() {
+      const history = JSON.parse(localStorage.getItem('chatHistory')) || [];
+      let text = `Mat BOT Chat with ${username}\n\n`;
+      history.forEach(m => {
+        const who = m.sender === 'user' ? username : 'Mat BOT';
+        text += `[${m.time}] ${who}: ${m.text}\n`;
       });
+      const blob = new Blob([text], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'matbot_chat.txt';
+      link.click();
     }
-  });
-
-  document.getElementById("plans-toggle").addEventListener("click", () => {
-    const popup = document.getElementById("plan-popup");
-    popup.style.display = (popup.style.display === 'block') ? 'none' : 'block';
-  });
-
-  document.addEventListener("click", (e) => {
-    const popup = document.getElementById("plan-popup");
-    if (!popup.contains(e.target) && e.target.id !== "plans-toggle") {
-      popup.style.display = "none";
-    }
-  });
-</script>
+  </script>
 </body>
 </html>
-<style>
-  * { box-sizing: border-box; }
-  html, body {
-    margin: 0;
-    padding: 0;
-    height: 100%;
-    font-family: 'Inter', sans-serif;
-    background-color: #ffffff;
-    color: #111;
-  }
-
-  body.dark {
-    background-color: #1e1e1e;
-    color: #f5f5f5;
-  }
-
-  #chat-container {
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-  }
-
-  header {
-    padding: 16px 24px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid #eee;
-  }
-
-  #profile {
-    display: none;
-    align-items: center;
-    gap: 8px;
-  }
-
-  #profile img {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-  }
-
-  #chat {
-    flex: 1;
-    overflow-y: auto;
-    padding: 24px;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-  }
-
-  .message-row {
-    display: flex;
-    gap: 12px;
-    animation: fadeIn 0.3s ease;
-  }
-
-  .message-row.user {
-    flex-direction: row-reverse;
-  }
-
-  .avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background-size: cover;
-    background-position: center;
-  }
-
-  .avatar.user {
-    background-image: url('https://i.pravatar.cc/40?u=user');
-  }
-
-  .avatar.bot {
-    background-image: url('https://api.dicebear.com/7.x/bottts/svg?seed=matbot');
-  }
-
-  .bubble {
-    max-width: 80%;
-    padding: 14px 18px;
-    border-radius: 16px;
-    font-size: 1rem;
-    line-height: 1.6;
-    word-wrap: break-word;
-    white-space: pre-wrap;
-    background: #f3f4f6;
-    color: #111;
-  }
-
-  .message-row.user .bubble {
-    background-color: #10a37f;
-    color: white;
-  }
-
-  body.dark .message-row.bot .bubble {
-    background-color: #2d2d2d;
-    color: #f1f1f1;
-  }
-
-  .code-block {
-    background-color: #1e1e1e;
-    color: #f5f5f5;
-    font-family: monospace;
-    padding: 16px;
-    border-radius: 8px;
-    margin-top: 8px;
-    position: relative;
-    overflow-x: auto;
-    white-space: pre;
-  }
-
-  .copy-button {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background: #10a37f;
-    color: white;
-    border: none;
-    padding: 6px 10px;
-    font-size: 0.8rem;
-    border-radius: 6px;
-    cursor: pointer;
-  }
-
-  .input-area {
-    display: flex;
-    padding: 16px;
-    border-top: 1px solid #e0e0e0;
-    background-color: white;
-  }
-
-  .input-area textarea {
-    flex: 1;
-    padding: 14px;
-    font-size: 1rem;
-    border-radius: 10px;
-    border: 1px solid #ccc;
-    resize: none;
-    max-height: 200px;
-    font-family: inherit;
-  }
-
-  .input-area button {
-    margin-left: 12px;
-    padding: 14px 20px;
-    font-size: 1rem;
-    background-color: #10a37f;
-    color: white;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    font-weight: 600;
-  }
-
-  .plans-button {
-    padding: 10px 20px;
-    font-size: 0.95rem;
-    font-weight: 600;
-    color: #ffffff;
-    background: linear-gradient(to right, #00c6ff, #0072ff);
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    box-shadow: 0 4px 10px rgba(0, 114, 255, 0.3);
-    transition: all 0.3s ease;
-  }
-
-  .plans-button:hover {
-    box-shadow: 0 6px 14px rgba(0, 114, 255, 0.5);
-    transform: translateY(-1px);
-  }
-
-  .plan-card {
-    padding: 16px;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
-    background: white;
-    margin-bottom: 12px;
-    text-align: center;
-  }
-
-  .plan-card ul {
-    list-style: none;
-    padding-left: 0;
-    text-align: left;
-  }
-
-  .plan-card h3 {
-    margin-top: 0;
-  }
-
-  .plan-card button {
-    padding: 12px 24px;
-    font-size: 1rem;
-    font-weight: 600;
-    border-radius: 8px;
-    border: 2px solid transparent;
-    transition: all 0.3s ease;
-    cursor: pointer;
-    text-transform: uppercase;
-  }
-
-  .plan-card.free button {
-    background: #ffffff;
-    border-color: #10a37f;
-    color: #10a37f;
-  }
-
-  .plan-card.free button:hover {
-    background: #10a37f;
-    color: #ffffff;
-  }
-
-  .plan-card.pro button {
-    background: linear-gradient(to right, #8e2de2, #4a00e0);
-    color: #ffffff;
-    border: none;
-    box-shadow: 0 4px 12px rgba(138, 43, 226, 0.4);
-  }
-
-  .plan-card.pro button:hover {
-    box-shadow: 0 6px 18px rgba(138, 43, 226, 0.6);
-    transform: translateY(-2px);
-  }
-
-  #plan-popup {
-    display: none;
-    position: absolute;
-    top: 60px;
-    right: 20px;
-    background: white;
-    border: 1px solid #ccc;
-    z-index: 1000;
-    padding: 12px;
-    border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-  }
-
-  #login-modal {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
-  }
-
-  #login-box {
-    background: white;
-    padding: 24px;
-    border-radius: 8px;
-    text-align: center;
-    width: 300px;
-  }
-
-  #login-box input {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 10px;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-  }
-
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-</style>
